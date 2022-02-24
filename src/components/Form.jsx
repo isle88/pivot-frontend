@@ -9,15 +9,16 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-export const Form = () => {
+export const Form = (props) => {
   const [isQuestion, setIsQuestion] = useState("true"); // fetch data
   const [countAnswers, setCountAnswers] = useState(4); // fetch data
   const [correctAnswer, setCorrectAnswer] = useState("A"); // fetch data
   const options = ["A", "B", "C", "D", "E", "F"]; // fetch data
   const answerList = [];
   const [resultText, setResultText] = useState("");
-  const [result, setResult] = useState('false');
+  const [result, setResult] = useState("false");
   const [userAnswer, setUserAnswer] = useState("");
+  const username = sessionStorage.getItem('username')
 
   for (let i = 0; i <= countAnswers - 1; i++) {
     answerList.push(options[i]);
@@ -26,21 +27,21 @@ export const Form = () => {
   const handleAnswer = (event) => {
     setUserAnswer(event.target.value);
     setResultText(" ");
-    setResult('true');
+    setResult("true");
   };
-
+  
   const handleSubmit = (event) => {
     event.preventDefault();
-
+    sessionStorage.setItem("answer", userAnswer);
     if (userAnswer === correctAnswer) {
       setResultText("You are correct!");
-      setResult('true');
+      setResult("true");
     } else if (userAnswer !== correctAnswer) {
       setResultText("Are you sure?");
-      setResult('false');
+      setResult("false");
     } else {
       setResultText("Please select answer");
-      setResult('false');
+      setResult("false");
     }
   };
 
@@ -55,7 +56,8 @@ export const Form = () => {
     );
   });
 
-  // useEffect , call api check is Presentation active?
+  // console.log(username)
+  // console.log(sessionStorage.getItem("answer", "<<<<"));
 
   return (
     <>
