@@ -27,16 +27,17 @@ export const Form = (props) => {
   
   const answerList = [];
   // const [presentation, setPresentation] = useState({})
-  
+
   const countAnswers = presentation.answer.length;
-  const [isActive, setIsActive] = useState('true');
+  const [isActive, setIsActive] = useState(presentation.isActive);
   const [resultText, setResultText] = useState("");
   const [result, setResult] = useState("false");
   const [userAnswer, setUserAnswer] = useState("");
   const username = sessionStorage.getItem("username");
   
   useEffect(() => {
-    setTimeout(() => setIsActive('false'), presentation.poolDuration)
+    setTimeout(() => {setIsActive('false')}, presentation.poolDuration)
+    //eslint-disable-next-line
   },[setIsActive])
 
 
