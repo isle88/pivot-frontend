@@ -66,7 +66,7 @@ export const Form = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const answer = sessionStorage.setItem("answer", userAnswer);
+    sessionStorage.setItem("answer", userAnswer);
     if (userAnswer === presentation.correctAnswer) {
       setResultText("You are correct!");
       setResult("true");
