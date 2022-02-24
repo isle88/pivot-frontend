@@ -9,4 +9,11 @@ npm install nodemon -D
 package.json file, inside script tag added this-
 dev:  nodemon App.js
 
-# created .gitignore file
+
+### created .gitignore file
+
+# Link to Back-End of the project
+- https://rhs-pivot-backend.herokuapp.com/
+- https://git.heroku.com/rhs-pivot-backend.git
+# netlify url
+- https://pivot-fe.netlify.app
