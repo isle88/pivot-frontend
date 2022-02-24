@@ -7,43 +7,44 @@ import {
   FormHelperText,
   Button,
 } from "@mui/material";
+import { useEffect } from 'react';
 import { useState } from "react";
 
 export const Form = (props) => {
-  const [isQuestion, setIsQuestion] = useState("true"); // fetch data
-  const [countAnswers, setCountAnswers] = useState(4); // fetch data
-  const [correctAnswer, setCorrectAnswer] = useState("A"); // fetch data
-  const options = ["A", "B", "C", "D", "E", "F"]; // fetch data
+  //  const [countAnswers, setCountAnswers] = useState(4) fetch data
+  // const [correctAnswer, setCorrectAnswer] = useState("A"); // fetch data
+  // const options = ["A", "B", "C", "D", "E", "F"]; // fetch data
+  // const [isQuestion, setIsQuestion] = useState("true"); // fetch data
+
+ const presentation = {
+    presentationid: "id-here", //
+    slideid: "random-page", //
+    correctAnswer: "A",
+    poolDuration: 30000, //
+    answer: ["A", "B", "C", "D"],
+    isActive: "true",
+  };
+  
   const answerList = [];
+  // const [presentation, setPresentation] = useState({})
+  
+  const countAnswers = presentation.answer.length;
+  const [isActive, setIsActive] = useState('true');
   const [resultText, setResultText] = useState("");
   const [result, setResult] = useState("false");
   const [userAnswer, setUserAnswer] = useState("");
-  const username = sessionStorage.getItem('username')
-
-  for (let i = 0; i <= countAnswers - 1; i++) {
-    answerList.push(options[i]);
-  }
-
-  const handleAnswer = (event) => {
-    setUserAnswer(event.target.value);
-    setResultText(" ");
-    setResult("true");
-  };
+  const username = sessionStorage.getItem("username");
   
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    sessionStorage.setItem("answer", userAnswer);
-    if (userAnswer === correctAnswer) {
-      setResultText("You are correct!");
-      setResult("true");
-    } else if (userAnswer !== correctAnswer) {
-      setResultText("Are you sure?");
-      setResult("false");
-    } else {
-      setResultText("Please select answer");
-      setResult("false");
+  useEffect(() => {
+    setTimeout(() => setIsActive('false'), presentation.poolDuration)
+  },[setIsActive])
+
+
+  if(answerList.length === 0) {
+    for (let i = 0; i <= countAnswers - 1; i++) {
+        answerList.push(presentation.answer[i]);
     }
-  };
+  }
 
   const answerForm = answerList.map((list) => {
     return (
@@ -56,12 +57,34 @@ export const Form = (props) => {
     );
   });
 
-  // console.log(username)
-  // console.log(sessionStorage.getItem("answer", "<<<<"));
+  const handleAnswer = (event) => {
+    setUserAnswer(event.target.value);
+    setResultText(" ");
+    setResult("true");
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const answer = sessionStorage.setItem("answer", userAnswer);
+    if (userAnswer === presentation.correctAnswer) {
+      setResultText("You are correct!");
+      setResult("true");
+    } else if (userAnswer !== presentation.correctAnswer) {
+      setResultText("Are you sure?");
+      setResult("false");
+    } else {
+      setResultText("Please select answer");
+      setResult("false");
+    }
+  };
+
+
+  console.log(username)
+  console.log(sessionStorage.getItem("answer", "<<<<"));
 
   return (
     <>
-      {isQuestion === "true" ? (
+      {isActive === "true" ? (
         <>
           <form onSubmit={handleSubmit}>
             <FormControl sx={{ m: 3 }} result={result} variant="standard">
@@ -85,7 +108,7 @@ export const Form = (props) => {
           </form>
         </>
       ) : (
-        <p>is Loading</p>
+        <p>Question time is coming soon ...</p>
       )}
     </>
   );
