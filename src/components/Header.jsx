@@ -1,8 +1,8 @@
 export const Header = () => {
 
-  return(
+  return (
     <>
-    <h1>Pivot</h1>
+      <h1>Pivot</h1>
     </>
-  )
-}
+  );
+};

@@ -7,15 +7,15 @@ import {
   FormHelperText,
   Button,
 } from "@mui/material";
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useState } from "react";
+import { SocketContext } from '../context/socket';
+
+
 
 export const Form = (props) => {
-  //  const [countAnswers, setCountAnswers] = useState(4) fetch data
-  // const [correctAnswer, setCorrectAnswer] = useState("A"); // fetch data
-  // const options = ["A", "B", "C", "D", "E", "F"]; // fetch data
-  // const [isQuestion, setIsQuestion] = useState("true"); // fetch data
-
+ const socket = useContext(SocketContext)
+ // answer, corrctAnswer
  const presentation = {
     presentationid: "id-here", //
     slideid: "random-page", //
@@ -34,6 +34,7 @@ export const Form = (props) => {
   const [result, setResult] = useState("false");
   const [userAnswer, setUserAnswer] = useState("");
   const username = sessionStorage.getItem("username");
+  const data = { username, userAnswer }
   
   useEffect(() => {
     setTimeout(() => {setIsActive('false')}, presentation.poolDuration)
@@ -67,6 +68,7 @@ export const Form = (props) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     sessionStorage.setItem("answer", userAnswer);
+    socket.emit('test', data)
     if (userAnswer === presentation.correctAnswer) {
       setResultText("You are correct!");
       setResult("true");
@@ -78,10 +80,6 @@ export const Form = (props) => {
       setResult("false");
     }
   };
-
-
-  console.log(username)
-  console.log(sessionStorage.getItem("answer", "<<<<"));
 
   return (
     <>
