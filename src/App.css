@@ -1,12 +1,6 @@
 .App {
   text-align: center;
-}
-
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+  color: #1190CB;
 }
 
 .App-header {
@@ -17,5 +11,45 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+}
+
+.header {
+  padding: 10px;
+  margin: 10px 10px;
+
+}
+
+.login {
+  padding: 30px 10px;
+  margin: 50px 10px;
+}
+
+.loginInput, .loginButton, .formButton {
+
+  padding: 20px;
+}
+
+.footer {
+  padding: 30px 10px;
+  margin: 30px 10px;
+}
+
+.afterQuestion {
+  padding: 40px 10px;
+  margin: 40px 10px;
+}
+
+.questionForm {
+  padding: 0 20px;
+
+}
+
+.formTitle {
+  padding-bottom: 10px;
+}
+
+img {
+  width: 200px;
+  height: 120px;
+  object-fit: contain;
 }
