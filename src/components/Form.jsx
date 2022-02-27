@@ -4,37 +4,44 @@ import {
   FormControl,
   FormLabel,
   RadioGroup,
-  FormHelperText,
   Button,
 } from "@mui/material";
 import { useContext, useEffect } from 'react';
 import { useState } from "react";
 import { SocketContext } from '../context/socket';
-
+import { fetchPresentation } from '../utils/api';
 
 
 export const Form = (props) => {
- const socket = useContext(SocketContext)
- // answer, corrctAnswer
- const presentation = {
+
+  const presentation = {
     presentationid: "id-here", //
     slideid: "random-page", //
     correctAnswer: "A",
-    poolDuration: 30000, //
+    poolDuration: 5000, //
     answer: ["A", "B", "C", "D"],
     isActive: "true",
   };
   
   const answerList = [];
-  // const [presentation, setPresentation] = useState({})
 
+  const [presentation2, setPresentation2] = useState([]); // get data from api
+
+  const socket = useContext(SocketContext)
   const countAnswers = presentation.answer.length;
   const [isActive, setIsActive] = useState(presentation.isActive);
-  const [resultText, setResultText] = useState("");
-  const [result, setResult] = useState("false");
   const [userAnswer, setUserAnswer] = useState("");
   const username = sessionStorage.getItem("username");
   const data = { username, userAnswer }
+
+  // req.params === data.map slideid ? setResult = correctAnswer
+  useEffect(() => {
+    fetchPresentation().then((data) => {
+      setPresentation2(data)
+    })
+  }, [setPresentation2])
+
+  console.log(presentation2)
   
   useEffect(() => {
     setTimeout(() => {setIsActive('false')}, presentation.poolDuration)
@@ -61,54 +68,50 @@ export const Form = (props) => {
 
   const handleAnswer = (event) => {
     setUserAnswer(event.target.value);
-    setResultText(" ");
-    setResult("true");
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     sessionStorage.setItem("answer", userAnswer);
     socket.emit('test', data)
-    if (userAnswer === presentation.correctAnswer) {
-      setResultText("You are correct!");
-      setResult("true");
-    } else if (userAnswer !== presentation.correctAnswer) {
-      setResultText("Are you sure?");
-      setResult("false");
-    } else {
-      setResultText("Please select answer");
-      setResult("false");
-    }
+    setIsActive('false')
   };
 
   return (
-    <>
+    <div>
       {isActive === "true" ? (
-        <>
+    <FormControl>
+        <div className='questionForm'>
           <form onSubmit={handleSubmit}>
-            <FormControl sx={{ m: 3 }} result={result} variant="standard">
-              <FormLabel id="demo-error-radios">
-                Please choose answer.
-              </FormLabel>
+            <div className='formTitle'>
+            <FormLabel id="demo-controlled-radio-buttons-group">Please select answer.</FormLabel>
+            </div>
               <RadioGroup
-                aria-labelledby="demo-error-radios"
+                aria-labelledby="demo-controlled-radio-buttons-group"
                 name="quiz"
                 useranswer={userAnswer}
+                value = {userAnswer}
                 onChange={handleAnswer}
               >
                 {answerForm}
               </RadioGroup>
-
-              <FormHelperText>{resultText}</FormHelperText>
+              <div className='formButton'>
               <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined">
                 Check Answer
               </Button>
-            </FormControl>
+              </div>
           </form>
-        </>
+        </div>
+            </FormControl>
+       
       ) : (
-        <p>Question time is coming soon ...</p>
+        <div className='afterQuestion'>
+        <p>Thank you !</p>
+        {userAnswer === '' ? (
+          `Please choose answer next time. `
+        ): (`You chose ${userAnswer}.`)}
+        </div>
       )}
-    </>
+      </div>
   );
-};
+}

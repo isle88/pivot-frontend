@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { TextField, Button } from "@mui/material";
+import { Form } from './Form';
+
+// sessionStorage.clear()
 
 export const Login = () => {
   const [username, setUsername] = useState("");
@@ -18,10 +21,14 @@ export const Login = () => {
       navigate("/Form");
     }
   };
+   
+  console.log(sessionStorage.getItem('username'))
 
   return (
     <>
-    {sessionStorage.clear()}
+    { sessionStorage.getItem('username') === null ?
+    ( <div className='login'>
+    <div className='loginInput'>
       <TextField
         id="standard-basic"
         type="text"
@@ -29,11 +36,19 @@ export const Login = () => {
         variant="standard"
         onChange={handleInput}
       />
+      </div>
+      <div className='loginButton'>
       <Button  variant="outlined" type="submit" onClick={handleLogin}>
         Login
       </Button>
+      </div>
+    </div>)
+    :(
+    <Form />
+   )}
     </>
   );
 };
+
 
 
