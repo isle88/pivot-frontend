@@ -1,8 +1,3 @@
-/* body {
-  border: 1px solid red;
-} */
-
-
 .App {
   text-align: center;
   color: #1190cb;
@@ -34,19 +29,19 @@
 /* form */
 
 .form {
-  background-color: white;
   display:flex;
   flex-direction: column;
   justify-content: absolute;
-  min-height: 70vh;
+  height: 70vh;
   width:100%;
   align-items: center;
+  align-content: center;
   margin: 3vh 0;
 }
 
-.afterQuestion {
-  padding: 40px 10px;
-  margin: 40px 10px;
+.formAfterQuestion, .formBeforeQuestion {
+  padding: 5vh 5vh;
+  margin: 5vh 5vh;
 }
 
 .formTitle {
@@ -73,11 +68,11 @@
   height: 50px;
 }
 
+
 img {
   height: 100px;
   object-fit: contain;
 }
-
 
 @media screen and (min-width: 768px) {
 
