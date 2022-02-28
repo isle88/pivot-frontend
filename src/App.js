@@ -10,18 +10,18 @@ const io = socket;
 
 function App() {
   return (
+    <div className="App">
     <BrowserRouter>
     <SocketContext.Provider  value={socket}> 
-    <div className="App">
         <Header />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/Form" element={<Form />} />
         </Routes>
         <Footer />
-    </div>
     </SocketContext.Provider>
       </BrowserRouter>
+    </div>
   );
 }
 

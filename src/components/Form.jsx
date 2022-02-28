@@ -18,7 +18,7 @@ export const Form = (props) => {
     presentationid: "id-here", //
     slideid: "random-page", //
     correctAnswer: "A",
-    poolDuration: 5000, //
+    poolDuration: 30000, //
     answer: ["A", "B", "C", "D"],
     isActive: "true",
   };
@@ -29,8 +29,10 @@ export const Form = (props) => {
 
   const socket = useContext(SocketContext)
   const countAnswers = presentation.answer.length;
+  const [correctAnswer, setCorrectAnswer] = useState(presentation.correctAnswer);
   const [isActive, setIsActive] = useState(presentation.isActive);
   const [userAnswer, setUserAnswer] = useState("");
+  const [style, setStyle] = useState('correct');
   const username = sessionStorage.getItem("username");
   const data = { username, userAnswer }
 
@@ -74,11 +76,14 @@ export const Form = (props) => {
     event.preventDefault();
     sessionStorage.setItem("answer", userAnswer);
     socket.emit('test', data)
+    if(userAnswer !== correctAnswer) {
+      setStyle('inCorrect')
+    }
     setIsActive('false')
   };
 
   return (
-    <div>
+    <div className='form'>
       {isActive === "true" ? (
     <FormControl>
         <div className='questionForm'>
@@ -105,11 +110,16 @@ export const Form = (props) => {
             </FormControl>
        
       ) : (
-        <div className='afterQuestion'>
+        <div>
         <p>Thank you !</p>
         {userAnswer === '' ? (
-          `Please choose answer next time. `
-        ): (`You chose ${userAnswer}.`)}
+          <p>Please choose answer next time.</p>
+        ): (
+          <>
+        <p>You chose {userAnswer}.</p>
+        <p className={style}>correct Answer was {correctAnswer}</p>
+        </>
+        )}
         </div>
       )}
       </div>

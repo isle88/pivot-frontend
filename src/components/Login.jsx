@@ -3,7 +3,7 @@ import { useState } from "react";
 import { TextField, Button } from "@mui/material";
 import { Form } from './Form';
 
-// sessionStorage.clear()
+sessionStorage.clear()
 
 export const Login = () => {
   const [username, setUsername] = useState("");
