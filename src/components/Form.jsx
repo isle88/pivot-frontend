@@ -6,13 +6,13 @@ import {
   RadioGroup,
   Button,
 } from "@mui/material";
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect } from "react";
 import { useState } from "react";
-import { SocketContext } from '../context/socket';
-import { fetchPresentation } from '../utils/api';
+import { useParams } from "react-router-dom";
+import { SocketContext } from "../context/socket";
+import { fetchPresentation } from "../utils/api";
 
-
-export const Form = (props) => {
+export const Form = () => {
 
   const presentation = {
     presentationid: "id-here", //
@@ -22,38 +22,42 @@ export const Form = (props) => {
     answer: ["A", "B", "C", "D"],
     isActive: "true",
   };
-  
+
+  const socket = useContext(SocketContext);
   const answerList = [];
 
   const [presentation2, setPresentation2] = useState([]); // get data from api
-
-  const socket = useContext(SocketContext)
   const countAnswers = presentation.answer.length;
-  const [correctAnswer, setCorrectAnswer] = useState(presentation.correctAnswer);
+  const [correctAnswer, setCorrectAnswer] = useState(
+    presentation.correctAnswer
+  );
   const [isActive, setIsActive] = useState(presentation.isActive);
   const [userAnswer, setUserAnswer] = useState("");
-  const [style, setStyle] = useState('correct');
+  const [style, setStyle] = useState("correct");
   const username = sessionStorage.getItem("username");
-  const data = { username, userAnswer }
+  const [isSubmit, setIsSubmit] = useState("false")
+  const { presentationId, sessionId } = useParams();
+  const data = { username, userAnswer, presentationId, sessionId };
 
   // req.params === data.map slideid ? setResult = correctAnswer
+  // console.log(presentation2)
+
   useEffect(() => {
     fetchPresentation().then((data) => {
-      setPresentation2(data)
-    })
-  }, [setPresentation2])
+      setPresentation2(data);
+    });
+  }, [setPresentation2]);
 
-  console.log(presentation2)
-  
   useEffect(() => {
-    setTimeout(() => {setIsActive('false')}, presentation.poolDuration)
+    setTimeout(() => {
+      setIsActive("false");
+    }, presentation.poolDuration);
     //eslint-disable-next-line
-  },[setIsActive])
+  }, [setIsActive]);
 
-
-  if(answerList.length === 0) {
+  if (answerList.length === 0) {
     for (let i = 0; i <= countAnswers - 1; i++) {
-        answerList.push(presentation.answer[i]);
+      answerList.push(presentation.answer[i]);
     }
   }
 
@@ -75,53 +79,56 @@ export const Form = (props) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     sessionStorage.setItem("answer", userAnswer);
-    socket.emit('test', data)
-    if(userAnswer !== correctAnswer) {
-      setStyle('inCorrect')
+    socket.emit("student_answer", data);
+    setIsSubmit(true);
+    if (userAnswer !== correctAnswer) {
+      setStyle("inCorrect");
     }
-    setIsActive('false')
   };
 
   return (
-    <div className='form'>
-      {isActive === "true" ? (
-    <FormControl>
-        <div className='questionForm'>
+    <div className="form">
+    {isActive === "false" ? (
+      <div className="formBeforeQuestion">
+       <p>No question currently.</p>
+       <p>Please wait for due.</p>
+      </div>
+    ): (
+      <>
+      {isSubmit === "false" ? (
+        <FormControl>
+        <div className="questionForm">
           <form onSubmit={handleSubmit}>
-            <div className='formTitle'>
-            <FormLabel id="demo-controlled-radio-buttons-group">Please select answer.</FormLabel>
+            <div className="formTitle">
+              <FormLabel id="demo-controlled-radio-buttons-group">
+                Please select answer.
+              </FormLabel>
             </div>
-              <RadioGroup
-                aria-labelledby="demo-controlled-radio-buttons-group"
-                name="quiz"
-                useranswer={userAnswer}
-                value = {userAnswer}
-                onChange={handleAnswer}
-              >
-                {answerForm}
-              </RadioGroup>
-              <div className='formButton'>
+            <RadioGroup
+              aria-labelledby="demo-controlled-radio-buttons-group"
+              name="quiz"
+              useranswer={userAnswer}
+              value={userAnswer}
+              onChange={handleAnswer}
+            >
+              {answerForm}
+            </RadioGroup>
+            <div className="formButton">
               <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined">
                 Check Answer
               </Button>
-              </div>
+            </div>
           </form>
         </div>
-            </FormControl>
-       
-      ) : (
-        <div>
-        <p>Thank you !</p>
-        {userAnswer === '' ? (
-          <p>Please choose answer next time.</p>
-        ): (
-          <>
+      </FormControl>
+      ):(
+        <div className='formAfterQuestion'>
         <p>You chose {userAnswer}.</p>
-        <p className={style}>correct Answer was {correctAnswer}</p>
-        </>
-        )}
-        </div>
-      )}
+        <p className={style}> answer was {correctAnswer}</p>
       </div>
-  );
+      )}
+      </>
+    )}
+    </div>
+  )
 }
