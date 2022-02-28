@@ -1,7 +1,5 @@
 const express = require("express");
 const app = express();
-const http = require("http");
-
 const io = require("socket.io")(3001);
 
 var path = require("path");
@@ -12,9 +10,7 @@ app.get("/", (req, res) => {
 
 io.on("connection", (socket) => {
 
-  console.log(socket.id)
-
-  socket.on('test', (data) => {
+  socket.on('student_answer', (data) => {
     console.log(data , '<<<<<')
   } )
 
