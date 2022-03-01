@@ -8,121 +8,65 @@ import {
 } from "@mui/material";
 import { useContext, useEffect } from "react";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { SocketContext } from "../context/socket";
 import { fetchPresentation } from "../utils/api";
 
 export const Form = () => {
-
-  const presentation = {
-   // get data from data.slides 
-    "slides": [
-      {
-        "question": {
-          "hasQuestion": false
-        },
-        "slideImageUrl": "https://i.picsum.photos/id/822/536/354.jpg?hmac=9SpWynDccCitrWhlYnRoAmb-sYoLNpUVQHmLsbbOLm4",
-        "slideId": "test01",
-        "_id": "621de4db9e505cf1c4d2a64d",
-        "responses": [
-          
-        ]
-      },
-      {
-        "question": {
-          "hasQuestion": true,
-          "numAnswers": 3,
-          "correctAnswer": "C"
-        },
-        "slideImageUrl": "https://i.picsum.photos/id/822/536/354.jpg?hmac=9SpWynDccCitrWhlYnRoAmb-sYoLNpUVQHmLsbbOLm4",
-        "slideId": "test02",
-        "_id": "621de4db9e505cf1c4d2a64e",
-        "responses": [
-          
-        ]
-      }
-    ],
-    "__v": 0
-  }
-  
   const { sessionId } = useParams();
   const socket = useContext(SocketContext);
+  const username = sessionStorage.getItem("username");
+  console.log(username)
+
+  const [slides, setSlides] = useState("");
+  const getSlideId = useLocation();
+  const slideId = getSlideId.state;
+
+  // fetching slides from api
+  useEffect(() => {
+    fetchPresentation(sessionId).then((res) => {
+      setSlides(res.slides);
+    });
+  }, [setSlides, sessionId]);
+  
+  const slide = [...slides]
+    .filter((id) => id.slideId === slideId)
+    .map(({ question }) => question);
+  
+  const [userAnswer, setUserAnswer] = useState();
+  const [isSubmit, setIsSubmit] = useState(false);
+
+  const data = { username, userAnswer, sessionId, slideId };
+  const [style, setStyle] = useState("correct");
 
 
   const answerList = [];
-  const options = ["A", "B", "C", "D", "E", "F"]
-  // const countAnswers = presentation.answer.length; numAnswers
-  const [numAnswers, setNumAnswers] = ([3])
-  const [correctAnswer, setCorrectAnswer] = useState('');
-  const [isActive, setIsActive] = useState();
-  const [userAnswer, setUserAnswer] = useState("");
-  const [style, setStyle] = useState("correct");
-  const username = sessionStorage.getItem("username");
-  const [isSubmit, setIsSubmit] = useState("false")
+  const options = ["A", "B", "C", "D", "E", "F"];
+  const [numAnswers, setNumAnswers] = useState()
+  const [correctAnswer, setCorrectAnswer] = useState()
+  const [isActive, setIsActive] = useState(false)
 
-  const [slides, setSlides] = useState()
-  const [slide, setSlide] = useState();
-  const [slideId, setSlideId] = useState();
-  const data = { username, userAnswer, sessionId, slideId };
-
-  const getSlide = presentation.slides.filter((id) => id.slideId === slideId)
-  
-  // fetching slides from api
+  // make foam
   useEffect(() => {
-    fetchPresentation(sessionId)
-    .then((res) => {
-      setSlides(res.slides)
-    })
-  }, [sessionId])
-  
-  console.log(getSlide)
-    // when i teacher frontend press start
-    useEffect(() => {
-      socket.on('current_slide', (id) => {
-       console.log(id)
-       setSlideId(id)
-      })
-    }, [slideId])
+    if (slide.length !== 0) {
+      if (slide[0].hasQuestion) {
+        setIsActive(true)
+        setNumAnswers(slide[0].numAnswers)
+        setCorrectAnswer(slide[0].correctAnswer)
+      } else {
+        setIsActive(false)
+      }
+    }
+  }, [slide,setIsActive, setNumAnswers, setCorrectAnswer])
 
+ console.log(slideId, 'slide-id')
 
+  // when teacher stopped poll
   useEffect(() => {
-   socket.on('current_slide_stopped', (id) => {
-     console.log(id)
-     setIsActive(false)
-   })
-  }, [slideId])
-
-
-
-
-
-
-  // when hasQuestion is false
-  // slide.map((x) => {
-  //   setIsActive(x.question.hasQuestion)
-  // })
-  // console.log(isActive)
-  // when hasQuestion is true
-  // slide.map(({question}) => {
-  //   console.log(question.hasQuestion)
-  //   // setIsActive(question.hasQuestion)
-  //   // setNumAnswers(question.numAnswers)
-  //   // setCorrectAnswer(question.correctAnswer)
-  // })
-
-  
-  // useEffect(() => {
-  //   fetchPresentation().then((data) => {
-  //     setPresentation2(data);
-  //   });
-  // }, [setPresentation2]);
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setIsActive("false");
-  //   }, presentation.poolDuration);
-  //   //eslint-disable-next-line
-  // }, [setIsActive]);
+    socket.on("current_slide_stopped", (id) => {
+      setIsActive(false)
+    });
+  }, [setIsActive, socket]);
 
   if (answerList.length === 0) {
     for (let i = 0; i <= numAnswers - 1; i++) {
@@ -148,7 +92,7 @@ export const Form = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     sessionStorage.setItem("answer", userAnswer);
-    socket.emit('student_submit_response', data);
+    socket.emit("student_submit_response", data);
     setIsSubmit(true);
     if (userAnswer !== correctAnswer) {
       setStyle("inCorrect");
@@ -157,47 +101,51 @@ export const Form = () => {
 
   return (
     <div className="form">
-    {isActive === false ? (
-      <div className="formBeforeQuestion">
-       <p>No question currently.</p>
-       <p>Please wait for due.</p>
-      </div>
-    ): (
-      <>
-      {isSubmit === "false" ? (
-        <FormControl>
-        <div className="questionForm">
-          <form onSubmit={handleSubmit}>
-            <div className="formTitle">
-              <FormLabel id="demo-controlled-radio-buttons-group">
-                Please select answer.
-              </FormLabel>
-            </div>
-            <RadioGroup
-              aria-labelledby="demo-controlled-radio-buttons-group"
-              name="quiz"
-              useranswer={userAnswer}
-              value={userAnswer}
-              onChange={handleAnswer}
-            >
-              {answerForm}
-            </RadioGroup>
-            <div className="formButton">
-              <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined">
-                Check Answer
-              </Button>
-            </div>
-          </form>
+      {isActive === false ? (
+        <div className="formBeforeQuestion">
+          <p>No question currently.</p>
+          <p>Please wait for due.</p>
         </div>
-      </FormControl>
-      ):(
-        <div className='formAfterQuestion'>
-        <p>You chose {userAnswer}.</p>
-        <p className={style}> answer was {correctAnswer}</p>
-      </div>
+      ) : (
+        <>
+          {isSubmit === false ? (
+            <FormControl>
+              <div className="questionForm">
+                <form onSubmit={handleSubmit}>
+                  <div className="formTitle">
+                    <FormLabel id="demo-controlled-radio-buttons-group">
+                      Please select answer.
+                    </FormLabel>
+                  </div>
+                  <RadioGroup
+                    aria-labelledby="demo-controlled-radio-buttons-group"
+                    name="quiz"
+                    useranswer={userAnswer}
+                    value={userAnswer}
+                    onChange={handleAnswer}
+                  >
+                    {answerForm}
+                  </RadioGroup>
+                  <div className="formButton">
+                    <Button
+                      sx={{ mt: 1, mr: 1 }}
+                      type="submit"
+                      variant="outlined"
+                    >
+                      Check Answer
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            </FormControl>
+          ) : (
+            <div className="formAfterQuestion">
+              <p>You chose {userAnswer}.</p>
+              <p className={style}> answer was {correctAnswer}</p>
+            </div>
+          )}
+        </>
       )}
-      </>
-    )}
     </div>
-  )
-}
+  );
+};
