@@ -8,7 +8,7 @@ import { fetchPresentation } from '../utils/api';
 sessionStorage.clear()
 
 export const Login = () => {
-  let { presentationId, sessionId } = useParams()
+  let { sessionId } = useParams()
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
   const socket = useContext  (SocketContext)
@@ -35,7 +35,7 @@ export const Login = () => {
       alert("username should not be blank");
     } else {
       sessionStorage.setItem('username', username)
-      navigate(`/${presentationId}/${sessionId}/Form`);
+      navigate(`/${sessionId}/Form`);
     }
   };
   
@@ -61,7 +61,7 @@ export const Login = () => {
       </div>
     </div>)
     :(
-    <Form presentationId={presentationId} sessionId={sessionId} />
+    <Form />
    )}
     </>
   );

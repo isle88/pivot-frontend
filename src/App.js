@@ -17,8 +17,8 @@ function App() {
         <Routes>
           {/* <Route path="/" element={<Login />} />
           <Route path="/Form" element={<Form />} /> */}
-         <Route path="/:presentationId/:sessionId" element={<Login />} />
-          <Route path="/:presentationId/:sessionId/Form" element={<Form />} />
+         <Route path="/:sessionId" element={<Login />} />
+          <Route path="/:sessionId/Form" element={<Form />} />
         </Routes>
         <Footer />
     </SocketContext.Provider>

@@ -36,11 +36,12 @@ export const Form = () => {
   const [style, setStyle] = useState("correct");
   const username = sessionStorage.getItem("username");
   const [isSubmit, setIsSubmit] = useState("false")
-  const { presentationId, sessionId } = useParams();
-  const data = { username, userAnswer, presentationId, sessionId };
+  const { sessionId } = useParams();
+  const data = { username, userAnswer, sessionId };
 
   // req.params === data.map slideid ? setResult = correctAnswer
   // console.log(presentation2)
+  console.log(sessionId)
 
   useEffect(() => {
     fetchPresentation().then((data) => {
@@ -79,7 +80,7 @@ export const Form = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     sessionStorage.setItem("answer", userAnswer);
-    socket.emit("student_answer", data);
+    socket.emit('student_submit_response', data);
     setIsSubmit(true);
     if (userAnswer !== correctAnswer) {
       setStyle("inCorrect");
