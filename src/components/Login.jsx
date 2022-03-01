@@ -5,15 +5,15 @@ import { Form } from './Form';
 import { SocketContext } from '../context/socket';
 import { fetchPresentation } from '../utils/api';
 
-sessionStorage.clear()
+// sessionStorage.clear()
 
 export const Login = () => {
   let { sessionId } = useParams()
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
   const socket = useContext  (SocketContext)
-  const [slide, setSlide] = useState()
-  const [slideId, setSlideId] = useState('')
+  // const [slide, setSlide] = useState()
+  // const [slideId, setSlideId] = useState('')
   // console.log(sessionId)
   // useEffect(() => {
   // //   //////// need to change as slideId
@@ -42,8 +42,6 @@ export const Login = () => {
     }
   };
   
-  // console.log(sessionStorage.getItem('username'))
-
   return (
     <>
     { sessionStorage.getItem('username') === null ?

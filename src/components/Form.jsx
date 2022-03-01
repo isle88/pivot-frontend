@@ -46,8 +46,9 @@ export const Form = () => {
   }
   
   const { sessionId } = useParams();
- 
   const socket = useContext(SocketContext);
+
+
   const answerList = [];
   const options = ["A", "B", "C", "D", "E", "F"]
   // const countAnswers = presentation.answer.length; numAnswers
@@ -58,28 +59,43 @@ export const Form = () => {
   const [style, setStyle] = useState("correct");
   const username = sessionStorage.getItem("username");
   const [isSubmit, setIsSubmit] = useState("false")
+
   const [slides, setSlides] = useState()
   const [slide, setSlide] = useState();
   const [slideId, setSlideId] = useState();
-  const data = { username, userAnswer, sessionId };
+  const data = { username, userAnswer, sessionId, slideId };
 
-  // const hardCodingSlideId = "test02"
-  // const slide = presentation.slides.filter((id) => id.slideId === hardCodingSlideId)
-
+  const getSlide = presentation.slides.filter((id) => id.slideId === slideId)
   
+  // fetching slides from api
   useEffect(() => {
     fetchPresentation(sessionId)
     .then((res) => {
       setSlides(res.slides)
     })
   }, [sessionId])
+  
+  console.log(getSlide)
+    // when i teacher frontend press start
+    useEffect(() => {
+      socket.on('current_slide', (id) => {
+       console.log(id)
+       setSlideId(id)
+      })
+    }, [slideId])
+
 
   useEffect(() => {
-    socket.on('current_slide', (id) => {
+   socket.on('current_slide_stopped', (id) => {
      console.log(id)
-     setSlideId(id)
-    })
-  })
+     setIsActive(false)
+   })
+  }, [slideId])
+
+
+
+
+
 
   // when hasQuestion is false
   // slide.map((x) => {
@@ -94,14 +110,6 @@ export const Form = () => {
   //   // setCorrectAnswer(question.correctAnswer)
   // })
 
-  // useEffect(() => {
-  //   slide.map((x) => {
-    // setIsActive(question.hasQuestion)
-    // setNumAnswers(question.numAnswers)
-    // setCorrectAnswer(question.correctAnswer)
-
-  //   })
-  // }, [])
   
   // useEffect(() => {
   //   fetchPresentation().then((data) => {
