@@ -1,11 +1,11 @@
 import axios from "axios"
 
 const api = axios.create({
-    baseURL: "https://pivot1.herokuapp.com/api",
+    baseURL: "https://rhs-pivot-backend.herokuapp.com/api/presentations/",
 });
 
-export const fetchPresentation = () => {
-    return api.get('/results').then(({ data }) => {
-        return data.results;
+export const fetchPresentation = (sessionId) => {
+    return api.get(`/${sessionId}`).then(({ data }) => {
+        return data.presentation;
     })
 }

@@ -12,18 +12,21 @@ export const Login = () => {
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
   const socket = useContext  (SocketContext)
-
-  //check data fetching at login
+  const [slide, setSlide] = useState()
+  const [slideId, setSlideId] = useState('')
+  // console.log(sessionId)
   // useEffect(() => {
-  //   fetchPresentation().then((data) => {
-  //     console.log(data)
-  //   })
-  // })
+  // //   //////// need to change as slideId
+  // //   socket.emit('student_login', sessionId)
+  // //    //eslint-disable-next-line
+  // }, [sessionId])
 
-  useEffect(() => {
-    socket.emit('student_login', sessionId)
-     //eslint-disable-next-line
-  }, [sessionId])
+  // useEffect(() => {
+  //   fetchPresentation(sessionId)
+  //   .then((res) => {
+  //     console.log(res)
+  //   })
+  // }, [sessionId])
 
 
   const handleInput = (e) => {
@@ -39,7 +42,7 @@ export const Login = () => {
     }
   };
   
-  console.log(sessionStorage.getItem('username'))
+  // console.log(sessionStorage.getItem('username'))
 
   return (
     <>
