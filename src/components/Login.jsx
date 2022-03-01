@@ -1,33 +1,22 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { TextField, Button } from "@mui/material";
 import { Form } from './Form';
 import { SocketContext } from '../context/socket';
-import { fetchPresentation } from '../utils/api';
 
 // sessionStorage.clear()
 
 export const Login = () => {
   let { sessionId } = useParams()
   const [username, setUsername] = useState("");
-  const navigate = useNavigate();
-  const socket = useContext  (SocketContext)
-  // const [slide, setSlide] = useState()
-  // const [slideId, setSlideId] = useState('')
-  // console.log(sessionId)
-  // useEffect(() => {
-  // //   //////// need to change as slideId
-  // //   socket.emit('student_login', sessionId)
-  // //    //eslint-disable-next-line
-  // }, [sessionId])
-
-  // useEffect(() => {
-  //   fetchPresentation(sessionId)
-  //   .then((res) => {
-  //     console.log(res)
-  //   })
-  // }, [sessionId])
-
+  const [slideId, setSlideId] = useState('')
+  const socket = useContext(SocketContext);
+  
+  useEffect(() => {
+    socket.on("current_slide", (id) => {
+      setSlideId(id);
+    });
+  }, [setSlideId, socket]);
 
   const handleInput = (e) => {
     setUsername(e.target.value);
@@ -38,10 +27,9 @@ export const Login = () => {
       alert("username should not be blank");
     } else {
       sessionStorage.setItem('username', username)
-      navigate(`/${sessionId}/Form`);
     }
   };
-  
+
   return (
     <>
     { sessionStorage.getItem('username') === null ?
@@ -56,17 +44,16 @@ export const Login = () => {
       />
       </div>
       <div className='loginButton'>
-      <Button  variant="outlined" type="submit" onClick={handleLogin}>
+        <Link to={`/${sessionId}/Form`} state={slideId}>
+      <Button variant="outlined" type="submit" onClick={handleLogin}>
         Login
       </Button>
+      </Link>
       </div>
     </div>)
     :(
-    <Form />
+    <Form slideId={slideId}/> 
    )}
     </>
   );
 };
-
-
-
