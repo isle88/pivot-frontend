@@ -7,7 +7,7 @@ import { fetchPresentation } from '../utils/api';
 
 sessionStorage.clear()
 
-export const Login = () => {
+export const Login = (sessionId) => {
   let { sessionId } = useParams()
   const [username, setUsername] = useState("");
   const navigate = useNavigate();

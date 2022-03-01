@@ -15,8 +15,6 @@ function App() {
     <SocketContext.Provider  value={socket}> 
         <Header />
         <Routes>
-          {/* <Route path="/" element={<Login />} />
-          <Route path="/Form" element={<Form />} /> */}
          <Route path="/:sessionId" element={<Login />} />
           <Route path="/:sessionId/Form" element={<Form />} />
         </Routes>
