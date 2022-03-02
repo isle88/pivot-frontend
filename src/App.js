@@ -6,8 +6,6 @@ import { Header } from "./components/Header";
 import { Login } from "./components/Login";
 import { socket, SocketContext } from './context/socket';
 
-// const io = socket;
-
 function App() {
   return (
     <div className="App">

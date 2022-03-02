@@ -40,10 +40,15 @@ export const Form = () => {
       setSlideId(id);
     });
     socket.on("current_slide_stopped", (id) => {
-      setSlideId('')
-      setIsActive(false);
+      setSlideId("");
+      if (userAnswer !== "") {
+        setIsSubmit(true);
+        setIsActive(true);
+      } else {
+        setIsActive(false);
+      }
     });
-  }, [socket, setSlideId, setIsActive]);
+  }, [socket, userAnswer, setSlideId, setIsActive, setIsSubmit]);
 
   // fetching slides from api
   useEffect(() => {
@@ -91,6 +96,7 @@ export const Form = () => {
     sessionStorage.setItem("answer", userAnswer);
     socket.emit("student_submit_response", data);
     setIsSubmit(true);
+    setIsActive(false);
     if (userAnswer !== correctAnswer) {
       setStyle("inCorrect");
     }
@@ -106,8 +112,8 @@ export const Form = () => {
     <div className="form">
       {isActive === false ? (
         <div className="formBeforeQuestion">
-          <p>No question currently.</p>
-          <p>Please wait for due.</p>
+          <p>No question currently</p>
+          <p>Please wait...</p>
         </div>
       ) : (
         <>
@@ -117,7 +123,7 @@ export const Form = () => {
                 <form onSubmit={handleSubmit}>
                   <div className="formTitle">
                     <FormLabel id="demo-controlled-radio-buttons-group">
-                      Please select answer.
+                      Please select answer
                     </FormLabel>
                   </div>
                   <RadioGroup
@@ -143,7 +149,7 @@ export const Form = () => {
             </FormControl>
           ) : (
             <div className="formAfterQuestion">
-              <p>You chose {userAnswer}.</p>
+              <p>You chose {userAnswer}</p>
               <p className={style}> answer was {correctAnswer}</p>
             </div>
           )}

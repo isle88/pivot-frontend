@@ -4,8 +4,6 @@ import { TextField, Button } from "@mui/material";
 import { Form } from './Form';
 import { SocketContext } from '../context/socket';
 
-// sessionStorage.clear()
-
 export const Login = () => {
   let { sessionId } = useParams()
   const [username, setUsername] = useState("");
