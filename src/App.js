@@ -15,6 +15,7 @@ function App() {
         <Routes>
          <Route path="/:sessionId" element={<Login />} />
           <Route path="/:sessionId/Form" element={<Form />} />
+          <Route path="*" element={<p className='notFound'>Please check url on the slide</p>} />
         </Routes>
         <Footer />
     </SocketContext.Provider>

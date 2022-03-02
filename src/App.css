@@ -73,6 +73,14 @@ a:link {
   height: 50px;
 }
 
+.notFound {
+  padding-top: 15vh;
+  font-size: larger;
+  height: 50vh;
+  width:100%;
+  align-items: center;
+  align-content: center;
+}
 
 img {
   height: 100px;
