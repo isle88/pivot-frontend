@@ -16,11 +16,34 @@ export const Form = () => {
   const { sessionId } = useParams();
   const socket = useContext(SocketContext);
   const username = sessionStorage.getItem("username");
-  console.log(username)
 
   const [slides, setSlides] = useState("");
   const getSlideId = useLocation();
-  const slideId = getSlideId.state;
+  const [slideId, setSlideId] = useState(getSlideId.state);
+  const slide = [...slides]
+    .filter((id) => id.slideId === slideId)
+    .map(({ question }) => question);
+
+  const answerList = [];
+  const options = ["A", "B", "C", "D", "E", "F"];
+  const [numAnswers, setNumAnswers] = useState("");
+  const [correctAnswer, setCorrectAnswer] = useState("");
+  const [isActive, setIsActive] = useState(false);
+  const [userAnswer, setUserAnswer] = useState("");
+  const [isSubmit, setIsSubmit] = useState(false);
+
+  const data = { username, userAnswer, sessionId, slideId };
+  const [style, setStyle] = useState("correct");
+
+  useEffect(() => {
+    socket.on("current_slide", (id) => {
+      setSlideId(id);
+    });
+    socket.on("current_slide_stopped", (id) => {
+      setSlideId('')
+      setIsActive(false);
+    });
+  }, [socket, setSlideId, setIsActive]);
 
   // fetching slides from api
   useEffect(() => {
@@ -28,45 +51,19 @@ export const Form = () => {
       setSlides(res.slides);
     });
   }, [setSlides, sessionId]);
-  
-  const slide = [...slides]
-    .filter((id) => id.slideId === slideId)
-    .map(({ question }) => question);
-  
-  const [userAnswer, setUserAnswer] = useState();
-  const [isSubmit, setIsSubmit] = useState(false);
-
-  const data = { username, userAnswer, sessionId, slideId };
-  const [style, setStyle] = useState("correct");
-
-
-  const answerList = [];
-  const options = ["A", "B", "C", "D", "E", "F"];
-  const [numAnswers, setNumAnswers] = useState()
-  const [correctAnswer, setCorrectAnswer] = useState()
-  const [isActive, setIsActive] = useState(false)
 
   // make foam
   useEffect(() => {
     if (slide.length !== 0) {
       if (slide[0].hasQuestion) {
-        setIsActive(true)
-        setNumAnswers(slide[0].numAnswers)
-        setCorrectAnswer(slide[0].correctAnswer)
+        setIsActive(true);
+        setNumAnswers(slide[0].numAnswers);
+        setCorrectAnswer(slide[0].correctAnswer);
       } else {
-        setIsActive(false)
+        setIsActive(false);
       }
     }
-  }, [slide,setIsActive, setNumAnswers, setCorrectAnswer])
-
- console.log(slideId, 'slide-id')
-
-  // when teacher stopped poll
-  useEffect(() => {
-    socket.on("current_slide_stopped", (id) => {
-      setIsActive(false)
-    });
-  }, [setIsActive, socket]);
+  }, [slide, isActive, setNumAnswers, setCorrectAnswer]);
 
   if (answerList.length === 0) {
     for (let i = 0; i <= numAnswers - 1; i++) {
@@ -98,6 +95,12 @@ export const Form = () => {
       setStyle("inCorrect");
     }
   };
+
+  useEffect(() => {
+    if (isSubmit) {
+      setIsActive(false);
+    }
+  }, [setIsActive, isSubmit]);
 
   return (
     <div className="form">

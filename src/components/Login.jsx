@@ -52,7 +52,7 @@ export const Login = () => {
       </div>
     </div>)
     :(
-    <Form slideId={slideId}/> 
+    <Form state={slideId}/> 
    )}
     </>
   );
